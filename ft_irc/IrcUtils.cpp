@@ -14,26 +14,32 @@
 
 int	setNonBlocking(int sockfd)
 {
-	int	flags;
-	flags = fcntl(sockfd, F_GETFL, 0);
-    fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
-    return 0;
+	return (fcntl(sockfd, F_SETFL, O_NONBLOCK));
 }
 
 void	connection(std::string mensg, std::string pass, int *sockfd, std::map<int, std::string> *clients)
 {
 	size_t	posIni;
 	size_t	posEnd;
+	std::string subStrAux;
 
 	posIni = mensg.find("PASS ") + 5;
+	subStrAux = mensg.substr(posIni);
 	if (posIni != std::string::npos)
 	{
-		posEnd = mensg.find('\r');
-		if (mensg.substr(posIni, posEnd - posIni) == pass)
+		posEnd = subStrAux.find('\r');
+		if (subStrAux.substr(0, posEnd) == pass)
+		{
+			mensg = subStrAux;
+			posIni = mensg.find("NICK ") + 5;
+			subStrAux = mensg.substr(posIni);
+			posEnd = subStrAux.find('\r');
+			std::cout << "NICK: " << subStrAux.substr(0, posEnd) << " -> conectado" << std::endl;
 			return ;
+		}
 		//EN este if podemos recoger los datos del usuario (nick, user y pedir una contraseña)
 	}
 	close(*sockfd);
-    std::cout << "ERROR: PASSWORD." << std::endl;
-    clients->erase(*sockfd);
+    	std::cout << "ERROR: PASSWORD." << std::endl;
+   	clients->erase(*sockfd);
 }
