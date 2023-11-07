@@ -6,11 +6,11 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 09:22:45 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/02 11:39:42 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/07 18:45:33 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Ircserv.hpp"
+#include "IrcServ.hpp"
 
 int main(int argc, char **argv)
 {
