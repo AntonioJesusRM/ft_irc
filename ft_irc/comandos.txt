@@ -1,0 +1,28 @@
+You must be able to authenticate, set a nickname, a username, join a channel,
+send and receive private messages using your reference client
+
+NICK - elegir nickname
+PASS - dar una contraseña para conectarse (no existe en X-Chat??)
+USER - elegir username
+
+JOIN - unirse a un canal
+PART - abandonar un canal
+
+MSG - enviar mensajes privados entre usuarios
+
+You must have operators and regular users.
+
+OPER - dar privilegios de operators a un usuario (en X-Chat no existe, existe el chanop que es un usuario
+que tiene privilegios en el CANAL, pero no en toda la red como un operator)
+
+https://modern.ircdocs.horse/ 
+"Channel Operators"
+
+KICK - echar a un usuario del canal
+MODE - cambiar el modo del canal
+INVITE - invitar a un usuario al canal
+TOPIC - cambiar el tema del canal
+
+user, server, canal
+
+server: vector canal y mapa user (map que tiene los nicks??)

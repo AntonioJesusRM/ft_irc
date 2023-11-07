@@ -56,7 +56,7 @@ void init_program(int *serverSocket, std::string pass)
 		int numEvents = kevent(kq, NULL, 0, events, MAX_EVENTS, NULL);
 		for (int i = 0; i < numEvents; ++i) {
             int sockfd = events[i].ident;
-			if (sockfd == *serverSocket) {
+			if (sockfd == *serverSocket) { //conexion con nuevo cliente??
                 struct sockaddr_in6 clientAddr;
                 socklen_t clientAddrLen = sizeof(clientAddr);
                 int clientSocket = accept(*serverSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
@@ -80,7 +80,9 @@ void init_program(int *serverSocket, std::string pass)
 					if (meng.find("CAP LS") != std::string::npos) {
 						connection(meng, pass, &sockfd, &clients);
 					} else {
-						//trabajar con el comando introducido
+                        const char *mensaje = "Bienvenido al servidor\r\n";
+						send(sockfd, mensaje, strlen(mensaje), 0);
+                        //trabajar con el comando introducido
 					}
 				}
 			}
