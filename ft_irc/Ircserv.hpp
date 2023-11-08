@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 09:19:29 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/02 12:31:20 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/08 10:53:52 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ void	connection(std::string mensg, std::string pass, int *sockfd, std::map<int, 
 /*FUNCTIONS InitSocket*/
 void	init_server(int *serverSocket, int port);
 void	init_program(int *serverSocket, std::string pass);
+
+/*FUNCTIONS ComunicationUtils*/
 
 
 #endif

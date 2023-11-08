@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 10:09:11 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/07 18:46:40 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/08 11:00:52 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void init_program(int *serverSocket, std::string pass)
     }
     EV_SET(&event, *serverSocket, EVFILT_READ, EV_ADD, 0, 0, NULL);
     kevent(kq, &event, 1, NULL, 0, NULL);
+    log("Server is listening...");
 	while (true) 
 	{
 		int numEvents = kevent(kq, NULL, 0, events, MAX_EVENTS, NULL);
