@@ -6,11 +6,11 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 10:12:35 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/02 13:01:26 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/08 15:02:56 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Ircserv.hpp"
+#include "IrcServ.hpp"
 
 int	setNonBlocking(int sockfd)
 {
@@ -30,16 +30,15 @@ void	connection(std::string mensg, std::string pass, int *sockfd, std::map<int, 
 		posEnd = subStrAux.find('\r');
 		if (subStrAux.substr(0, posEnd) == pass)
 		{
-			mensg = subStrAux;
 			posIni = mensg.find("NICK ") + 5;
 			subStrAux = mensg.substr(posIni);
 			posEnd = subStrAux.find('\r');
-			std::cout << "NICK: " << subStrAux.substr(0, posEnd) << " -> conectado" << std::endl;
+			//comprobar nick y si es el mismo expulsar
+			std::cout << "User " << subStrAux.substr(0, posEnd) << " connected." << std::endl;
 			return ;
 		}
-		//EN este if podemos recoger los datos del usuario (nick, user y pedir una contraseña)
 	}
 	close(*sockfd);
-    	std::cout << "ERROR: PASSWORD." << std::endl; //464
+    std::cout << "ERROR: PASSWORD." << std::endl;
    	clients->erase(*sockfd);
 }
