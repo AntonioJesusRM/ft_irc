@@ -6,7 +6,7 @@
 #    By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/19 09:17:04 by aruiz-mo          #+#    #+#              #
-#    Updated: 2023/10/19 10:26:35 by aruiz-mo         ###   ########.fr        #
+#    Updated: 2023/11/08 15:02:26 by aruiz-mo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ RM = rm -rf
 
 COLOR = \033[1;32m
 
-SRC = main.cpp InitSocket.cpp IrcUtils.cpp
+SRC = main.cpp InitSocket.cpp IrcUtils.cpp ComunicationUtils.cpp
 
 OBJ = $(SRC:%.cpp=%.o)
 

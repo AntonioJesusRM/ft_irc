@@ -6,11 +6,11 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 10:52:58 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/08 10:57:47 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/08 15:03:54 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Ircserv.hpp"
+#include "IrcServ.hpp"
 
 void log(const std::string& message)
 {
