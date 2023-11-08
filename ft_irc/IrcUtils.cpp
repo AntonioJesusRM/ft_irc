@@ -40,6 +40,6 @@ void	connection(std::string mensg, std::string pass, int *sockfd, std::map<int, 
 		//EN este if podemos recoger los datos del usuario (nick, user y pedir una contraseña)
 	}
 	close(*sockfd);
-    	std::cout << "ERROR: PASSWORD." << std::endl;
+    	std::cout << "ERROR: PASSWORD." << std::endl; //464
    	clients->erase(*sockfd);
 }

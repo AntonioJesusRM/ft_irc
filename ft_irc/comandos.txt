@@ -25,4 +25,6 @@ TOPIC - cambiar el tema del canal
 
 user, server, canal
 
-server: vector canal y mapa user (map que tiene los nicks??)
+server: vector canal y mapa user
+
+https://moepii.sourceforge.net/irclib/javadoc/org/schwering/irc/lib/IRCConstants.html#ERR_ALREADYREGISTRED
