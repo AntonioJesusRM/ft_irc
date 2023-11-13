@@ -24,7 +24,6 @@ class User
         std::string _realName;
         std::string _hostname;
         std::string _status;
-        int         _contTryUser;
         int         _port;
         int         _clientSocket;
         User();
@@ -36,7 +35,6 @@ class User
 
         int         getClientSocket();
         int         getPort();
-        int         getCont();
         std::string getHostName();
         std::string getStatus();
         std::string getNick();
@@ -47,7 +45,6 @@ class User
         void setRealName(std::string const realName);
 
         std::string getPrefix()const;
-        void increaseCont();
         void clientMessage(const std::string& message)const;
         
         void badPassword()const;

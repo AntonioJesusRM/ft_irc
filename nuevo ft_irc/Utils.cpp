@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 10:52:58 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/11 12:29:27 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/13 11:25:08 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,11 @@ std::string getPassMsg(std::string msg)
     size_t		posIni;
 	size_t		posEnd;
 	std::string	subStrAux;
-	std::string	pass;
+	std::string	pass = "";
 
 	posIni = msg.find("PASS ") + 5;
+	if (posIni == std::string::npos)
+		return (pass);
 	subStrAux = msg.substr(posIni);
 	posEnd = subStrAux.find("\r");
 	pass = subStrAux.substr(0, posEnd);

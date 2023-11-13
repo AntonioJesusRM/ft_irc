@@ -35,5 +35,11 @@ class Server
         ~Server();
 
         void start();
-        void swithcMessage(std::string const meng, int sockfd);
+        void switchStatus(std::string const msg, int sockfd);
+        
+        int clientConected(std::string const msg, int sockfd);
+        void clientRegistration(std::string const msg, int sockfd);
+        void switchCommand(std::string const msg, int sockfd);
+        
+        void changeNick(std::string msg, int sockfd);
 };

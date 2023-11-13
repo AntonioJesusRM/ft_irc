@@ -16,7 +16,6 @@ User::User(int serverSocket, int kq)
     kevent(kq, &event, 1, NULL, 0, NULL);
     this->_port = ntohs(clientAddr.sin6_port);
     this->_hostname = hostname;
-    this->_contTryUser = 0;
     logMessage(this->_hostname + ":" + std::to_string(this->_port) + " has connected.");
     this->_status = "CREATE";
     this->_nick = "";
@@ -31,7 +30,6 @@ User::~User()
 
 int User::getClientSocket(){return (this->_clientSocket);}
 int User::getPort(){return (this->_port);}
-int User::getCont(){return (this->_contTryUser);}
 std::string User::getHostName(){return (this->_hostname);}
 std::string User::getStatus(){return (this->_status);}
 std::string User::getNick(){return (this->_nick);}
@@ -48,8 +46,6 @@ std::string User::getPrefix() const
 
     return this->_nick + username + hostname;
 }
-
-void User::increaseCont(){this->_contTryUser++;}
 
 void User::clientMessage(const std::string& message)const
 {

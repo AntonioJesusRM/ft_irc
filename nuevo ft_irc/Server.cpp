@@ -67,68 +67,93 @@ void Server::start()
                     this->_users.erase(sockfd);
                 } else {
 					std::string meng = buffer;
-                    swithcMessage(meng, sockfd);
+                    switchStatus(meng, sockfd);
 				}
 			}
         }
     }
 }
 
-void    Server::swithcMessage(std::string const msg, int sockfd)
+void    Server::switchStatus(std::string const msg, int sockfd)
 {
     if (this->_users[sockfd]->getStatus() == "CREATE")
     {
-        if (msg.find("PASS ") + 5 != std::string::npos)
-        {
-            if (this->_pass == getPassMsg(msg))
-            {
-                this->_users[sockfd]->setStatus("CONECTED");
-                this->_users[sockfd]->setUser(getUserMsg(msg));
-                this->_users[sockfd]->setRealName(getRealNameMsg(msg));
-            }
-            else
-            {
-                User* user = this->_users[sockfd];
-                std::string msg = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " has disconnected because error password";
-                logMessage (msg);
-                this->_users[sockfd]->badPassword();
-                delete user;
-                this->_users.erase(sockfd);
-                return ;
-            }
-        }
+        if (this->clientConected(msg, sockfd) == 0)
+            return ;
+        
     }
     if (this->_users[sockfd]->getStatus() == "CONECTED")
     {
-        if (this->_users[sockfd]->getCont() < 3)
-        {
-            std::string nick = getNickMsg(msg);
-            for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
-				if (nick == it->second->getNick())
-				{
-                    this->_users[sockfd]->increaseCont();
-                    this->_users[sockfd]->badNickNameTry(nick);
-                    if (this->_users[sockfd]->getCont() == 2)
-                    {
-                        User* user = this->_users[sockfd];
-                        std::string msg = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " has disconnected because bad user";
-                        this->_users[sockfd]->badNickName(nick);
-                        logMessage (msg);
-                        delete user;
-                        this->_users.erase(sockfd);
-                    }
-					return ;
-				}
-			}
-            this->_users[sockfd]->setStatus("SIGNEDUP");
-            this->_users[sockfd]->setNick(nick);
-            this->_users[sockfd]->welcome();
-			std::string msg = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " is now known as " + nick + ".";
-            logMessage(msg);
-        }
+        this->clientRegistration(msg, sockfd);
+        return ;
     }
     if (this->_users[sockfd]->getStatus() == "SIGNEDUP")
+        this->switchCommand(msg, sockfd);
+}
+
+int Server::clientConected(std::string const msg, int sockfd)
+{
+    if (!getPassMsg(msg).empty() && this->_pass == getPassMsg(msg))
     {
+            this->_users[sockfd]->setStatus("CONECTED");
+            this->_users[sockfd]->setUser(getUserMsg(msg));
+            this->_users[sockfd]->setRealName(getRealNameMsg(msg));
+            return 1;
+    }
+    else
+    {
+        User* user = this->_users[sockfd];
+        std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " has disconnected because error password";
+        logMessage (msgOut);
+        this->_users[sockfd]->badPassword();
+        delete user;
+        this->_users.erase(sockfd);
+        return 0;
+    }
+}
+
+void Server::clientRegistration(std::string const msg, int sockfd)
+{
+    std::string nick = getNickMsg(msg);
+    for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
+        if (nick == it->second->getNick())
+        {
+            this->_users[sockfd]->badNickNameTry(nick);
+            return ;
+        }
+    }
+    this->_users[sockfd]->setStatus("SIGNEDUP");
+    this->_users[sockfd]->setNick(nick);
+    this->_users[sockfd]->welcome();
+    std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " is now known as " + nick + ".";
+    logMessage(msgOut);
+}
+
+void    Server::switchCommand(std::string const msg, int sockfd)
+{
+    std::string command = msg.substr(0, msg.find(" "));
+    if (command == "NICK")
+        this->changeNick(msg, sockfd);
+    else
+    {
+        std::cout << this->_users[sockfd]->getNick() << " esta " << this->_users[sockfd]->getStatus() << std::endl;
         std::cout << msg << std::endl;
     }
+}
+
+void Server::changeNick(std::string msg, int sockfd)
+{
+    std::string nick = msg.substr(msg.find(" ") + 1);
+    nick = nick.substr(0, nick.find('\r'));
+    for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
+        if (nick == it->second->getNick())
+        {
+            this->_users[sockfd]->badNickName(nick);
+            return ;
+        }
+    }
+    this->_users[sockfd]->setNick(nick);
+    this->_users[sockfd]->welcome();
+    std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " is now known as " + nick + ".";
+    logMessage(msgOut);
 }
