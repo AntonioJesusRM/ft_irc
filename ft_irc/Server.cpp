@@ -10,6 +10,12 @@ Server::~Server()
 
 Server::Join(std::string canal)
 {
+    for (channels_it it = this->_channels.begin(); it < this->_channels.end(); it++)
+    {
+        if (it->getName() == canal)
+            //existe el canal, mensaje de que ha entrado
+    }
+    //no existe el canal, crearlo
 }
 
 Server::Part(std::string canal)
@@ -34,4 +40,12 @@ std::string Server::IsACommand(std::string meng)
         }
     }
     return ("Not found");
+}
+
+Server::insertUser()
+{
+}
+
+Server::createChannel()
+{
 }

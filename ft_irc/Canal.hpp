@@ -9,6 +9,8 @@ class Canal
     public:
         Canal();
         ~Canal();
+
+        std::string getName() const;
 }
 
 #endif

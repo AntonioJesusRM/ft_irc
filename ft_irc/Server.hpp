@@ -7,10 +7,11 @@
 
 class Server
 {
+    typedef std::vector<Canal>::iterator channels_it;
     private:
-        std::vector<Canal> canals;
-        std::map<int, User> users;
-        int serverSocket;
+        std::vector<Canal> _channels;
+        std::map<int, User> _users;
+        int _serverSocket;
     public:
         Server();
         ~Server();
@@ -26,8 +27,8 @@ class Server
         Invite();
         Topic();
         
-        //insertar usuarios
-        //crear canal
+        insertUser();//insertar usuarios
+        createChannel();//crear canal
 }
 
 #endif

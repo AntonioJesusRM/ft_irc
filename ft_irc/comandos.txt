@@ -10,6 +10,8 @@ PART - abandonar un canal
 
 MSG - enviar mensajes privados entre usuarios
 
+QUIT - dejar el servidor
+
 You must have operators and regular users.
 
 OPER - dar privilegios de operators a un usuario (en X-Chat no existe, existe el chanop que es un usuario
@@ -28,3 +30,5 @@ user, server, canal
 server: vector canal y mapa user
 
 https://moepii.sourceforge.net/irclib/javadoc/org/schwering/irc/lib/IRCConstants.html#ERR_ALREADYREGISTRED
+
+una vez ejecutas y te conectas al server, no necesitas registrarte, lanza un mensaje de que no debes registrarte
