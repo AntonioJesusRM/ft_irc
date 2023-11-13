@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 10:09:11 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/08 11:00:52 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/10 14:06:45 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void init_program(int *serverSocket, std::string pass)
 	int				kq;
 	struct kevent	event;
 	struct kevent	events[MAX_EVENTS];
-	std::map<int, std::string> clients;
+	std::map<int, User *> clients;
 
 	kq = kqueue();
     if (kq == -1) {
@@ -51,7 +51,7 @@ void init_program(int *serverSocket, std::string pass)
     }
     EV_SET(&event, *serverSocket, EVFILT_READ, EV_ADD, 0, 0, NULL);
     kevent(kq, &event, 1, NULL, 0, NULL);
-    log("Server is listening...");
+    logMessage("Server is listening...");
 	while (true) 
 	{
 		int numEvents = kevent(kq, NULL, 0, events, MAX_EVENTS, NULL);
@@ -61,20 +61,26 @@ void init_program(int *serverSocket, std::string pass)
                 struct sockaddr_in6 clientAddr;
                 socklen_t clientAddrLen = sizeof(clientAddr);
                 int clientSocket = accept(*serverSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
+                char hostname[CHUNK_SIZE];
+                int res = getnameinfo((struct sockaddr *) &clientAddr, sizeof(clientAddr), hostname, CHUNK_SIZE, NULL, 0, NI_NUMERICSERV);
+                if (res != 0)
+                    throw std::runtime_error("Error while getting a hostname on a new client!");
                 setNonBlocking(clientSocket);
                 EV_SET(&event, clientSocket, EVFILT_READ, EV_ADD, 0, 0, NULL);
                 kevent(kq, &event, 1, NULL, 0, NULL);
-				char clientIP[INET6_ADDRSTRLEN];
-				inet_ntop(AF_INET6, &(clientAddr.sin6_addr), clientIP, sizeof(clientIP));
-				clients[clientSocket] = clientIP;
+                User *user = new User(ntohs(clientAddr.sin6_port), hostname);
+				clients[clientSocket] = user;
             } else {
                 char buffer[1024];
 				memset(buffer, '\0', sizeof(buffer));
                 ssize_t bytesRead = recv(sockfd, buffer, sizeof(buffer), 0);
                 if (bytesRead <= 0) {
                     // Cliente desconectado o error de lectura
+                    User* user = clients[sockfd];
                     close(sockfd);
-                    std::cout << "Cliente desconectado desde " << clients[sockfd] << std::endl;
+                    std::string msg = clients[sockfd]->getHostname() + ":" + std::to_string(clients[sockfd]->getPort()) + " has disconnected!";
+                    logMessage (msg);
+                    delete user;
                     clients.erase(sockfd);
                 } else {
 					std::string meng = buffer;

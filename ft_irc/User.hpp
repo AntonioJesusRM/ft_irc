@@ -1,26 +1,33 @@
-#ifndef USER_HPP
-#define USER_HPP
-
+#pragma once
 #include <iostream>
-#include <string>
 
 class User
 {
     private:
         std::string _user;
         std::string _nick;
-        std::string _pass;
-        bool is_oper;
-    public:
-        ~User();
+        std::string _realName;
+        //std::string _pass;
+        std::string _hostname;
+        int         _port;
+        //bool        is_oper;
         User();
+    public:
+        User(int port, std::string const &hostname);
+        ~User();
 
-        setUser(std::string user);
-        setNick(std::string nick);
-        setPass(std::string pass);
-        beOper();
+        void setUser(std::string user);
+        void setNick(std::string nick);
+        void setRealName(std::string realName);
+        //void setPass(std::string pass);
 
-        bool authenticate(std::stirng nick, std::string pass);
+        //std::string getUser();
+        std::string getNick();
+        //std::string getPass();
+        std::string getHostname();
+        int         getPort();
+
+        /*void beOper();
+
+        bool authenticate(std::string nick, std::string pass);*/
 };
-
-#endif
