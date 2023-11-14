@@ -131,14 +131,25 @@ void Server::clientRegistration(std::string const msg, int sockfd)
 
 void    Server::switchCommand(std::string const msg, int sockfd)
 {
+    std::string commands[] = {"JOIN", "PART", "MSG", "NICK"};
+
+    void (Server::*ExecCommand[4])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick};
+    
     std::string command = msg.substr(0, msg.find(" "));
-    if (command == "NICK")
+    for (int i = 0; i < 4; i++)
+    {
+        if (command == commands[i])
+        {
+            (this->*ExecCommand[i])(msg, sockfd);
+        }
+    }
+    /*if (command == "NICK")
         this->changeNick(msg, sockfd);
     else
     {
         std::cout << this->_users[sockfd]->getNick() << " esta " << this->_users[sockfd]->getStatus() << std::endl;
         std::cout << msg << std::endl;
-    }
+    }*/
 }
 
 void Server::changeNick(std::string msg, int sockfd)
@@ -156,4 +167,36 @@ void Server::changeNick(std::string msg, int sockfd)
     this->_users[sockfd]->welcome();
     std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " is now known as " + nick + ".";
     logMessage(msgOut);
+}
+
+void Server::Join(std::string const msg, int sockfd)
+{
+    std::string channel = msg.substr(msg.find(" ") + 1);
+    channel = channel.substr(0, channel.find('\r'));
+
+    std::string users = "";
+
+    for (size_t i = 0; i < _channels.size(); i++)
+    {
+        if (channel == _channels[i]->getName())
+        {
+            users.append(_channels[i]->getUsers(channel));
+        }
+    }
+
+    this->_users[sockfd]->Join(channel, users);
+    (void)msg;
+    (void)sockfd;
+}
+
+void Server::Part(std::string const msg, int sockfd)
+{
+    (void)msg;
+    (void)sockfd;
+}
+
+void Server::Msg(std::string const msg, int sockfd)
+{
+    (void)msg;
+    (void)sockfd;
 }

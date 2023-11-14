@@ -5,12 +5,13 @@ class Canal
 {
     private:
         std::string _name;
-        std::map<std::string, User> users;
+        std::map<int, User> users;
     public:
-        Canal();
+        Canal(std::string name);
         ~Canal();
 
         std::string getName() const;
+        void newUser(User &user); //añadir un usuario al canal
 }
 
 #endif

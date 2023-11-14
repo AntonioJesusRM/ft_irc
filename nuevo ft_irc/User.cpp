@@ -41,10 +41,9 @@ void User::setNick(std::string const nick){this->_nick = nick;}
 
 std::string User::getPrefix() const 
 {
-    std::string username = this->_user.empty() ? "" : "!" + this->_user;
     std::string hostname = this->_hostname.empty() ? "" : "@" + this->_hostname;
 
-    return this->_nick + username + hostname;
+    return this->_nick + hostname;
 }
 
 void User::clientMessage(const std::string& message)const
@@ -58,3 +57,4 @@ void User::badPassword()const{this->clientMessage(":" + this->getPrefix() + " " 
 void User::badNickNameTry(std::string nick)const{this->clientMessage(":" + this->getPrefix() + " " + "433 " + nick + " " + nick  + " :Nickname is already in use");}
 void User::badNickName(std::string nick)const{this->clientMessage(nick  + " :Nickname is already in use");}
 void User::welcome()const{this->clientMessage(":" + this->getPrefix() + " " + "001 " + this->_nick + " :Welcome " + this->_nick + " to the ft_irc network");}
+void User::Join(std::string channel, std::string users)const{"353 " + this->_nick + " = " + channel + " :" + users;}

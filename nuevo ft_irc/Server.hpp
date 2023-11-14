@@ -12,7 +12,7 @@
 # include <vector>
 # include <map>
 # include "Utils.hpp"
-# include "Chanel.hpp"
+# include "Channel.hpp"
 # include "User.hpp"
 
 # define MAX_CONNECTIONS 999
@@ -24,7 +24,7 @@ class Server
         int                     _serverSocket;
         int                     _port;
         std::string             _pass;
-        //std::vector<Chanel *>   _chanels;
+        std::vector<Channel *>   _channels;
         std::map<int, User *>   _users;
         
         Server();
@@ -42,4 +42,8 @@ class Server
         void switchCommand(std::string const msg, int sockfd);
         
         void changeNick(std::string msg, int sockfd);
+
+        void Join(std::string msg, int sockfd);
+        void Part(std::string msg, int sockfd);
+        void Msg(std::string msg, int sockfd);
 };

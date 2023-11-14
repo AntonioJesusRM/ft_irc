@@ -51,4 +51,5 @@ class User
         void badNickNameTry(std::string nick)const;
         void badNickName(std::string nick)const;
         void welcome()const;
+        void Join(std::string channel, std::string users)const;
 };

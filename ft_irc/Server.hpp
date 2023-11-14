@@ -17,9 +17,11 @@ class Server
         ~Server();
         
         std::string IsACommand(std::string meng);
-        Join(std::string canal);
-        Part(std::string canal);
+        void Join(std::string canal);
+        void Part(std::string canal, User &user);
         Msg();
+
+        Quit();
 
         //privilegios de oper
         Kick();
@@ -27,8 +29,8 @@ class Server
         Invite();
         Topic();
         
-        insertUser();//insertar usuarios
-        createChannel();//crear canal
+        insertUser(User &user);//insertar usuarios
+        createChannel(std::string name);//crear canal
 }
 
 #endif

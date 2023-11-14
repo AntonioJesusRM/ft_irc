@@ -20,7 +20,7 @@ RM = rm -rf
 
 COLOR = \033[1;32m
 
-SRC = main.cpp Server.cpp User.cpp Utils.cpp
+SRC = main.cpp Server.cpp User.cpp Utils.cpp Channel.cpp
 
 OBJ = $(SRC:%.cpp=%.o)
 
