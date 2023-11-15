@@ -13,12 +13,15 @@
 # include <vector>
 # include <map>
 # include "Utils.hpp"
+# include "Channel.hpp"
 
 # define CHUNK_SIZE 1025
 
+class Channel;
 class User
 {
     private:
+        std::vector<Channel *> _channels;
         std::string _user;
         std::string _nick;
         std::string _realName;
@@ -46,10 +49,14 @@ class User
 
         std::string getPrefix()const;
         void clientMessage(const std::string& message)const;
+        void join(Channel *channel);
         
         void badPassword()const;
         void badNickNameTry(std::string nick)const;
         void badNickName(std::string nick)const;
         void welcome()const;
-        void Join(std::string channel, std::string users)const;
+        void listUserJoin(std::string channel, std::string users)const;
+        void joinMsg(std::string channel)const;
+
+        void errorPassChannel(std::string channel)const;
 };

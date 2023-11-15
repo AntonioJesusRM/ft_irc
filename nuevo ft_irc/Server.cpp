@@ -30,6 +30,8 @@ Server::Server(int port, std::string pass)
 
 Server::~Server()
 {
+    this->_users.clear();
+    this->_channels.clear();
     close(this->_serverSocket);
 }
 
@@ -74,6 +76,16 @@ void Server::start()
     }
 }
 
+Channel *Server::getChannel(std::string name)
+{
+    for (size_t i = 0; i < this->_channels.size(); i++)
+    {
+        if (name == this->_channels[i]->getName())
+            return (this->_channels[i]);
+    }
+    return (NULL);
+}
+
 void    Server::switchStatus(std::string const msg, int sockfd)
 {
     if (this->_users[sockfd]->getStatus() == "CREATE")
@@ -88,7 +100,10 @@ void    Server::switchStatus(std::string const msg, int sockfd)
         return ;
     }
     if (this->_users[sockfd]->getStatus() == "SIGNEDUP")
+    {
+        std::cout << "#####ENTRADA: " << msg << std::endl;
         this->switchCommand(msg, sockfd);
+    }
 }
 
 int Server::clientConected(std::string const msg, int sockfd)
@@ -143,13 +158,6 @@ void    Server::switchCommand(std::string const msg, int sockfd)
             (this->*ExecCommand[i])(msg, sockfd);
         }
     }
-    /*if (command == "NICK")
-        this->changeNick(msg, sockfd);
-    else
-    {
-        std::cout << this->_users[sockfd]->getNick() << " esta " << this->_users[sockfd]->getStatus() << std::endl;
-        std::cout << msg << std::endl;
-    }*/
 }
 
 void Server::changeNick(std::string msg, int sockfd)
@@ -171,22 +179,22 @@ void Server::changeNick(std::string msg, int sockfd)
 
 void Server::Join(std::string const msg, int sockfd)
 {
-    std::string channel = msg.substr(msg.find(" ") + 1);
-    channel = channel.substr(0, channel.find('\r'));
-
-    std::string users = "";
-
-    for (size_t i = 0; i < _channels.size(); i++)
+    std::vector<std::string> channelInfo = getChannelMsg(msg);
+    
+    std::string name = channelInfo[0];
+    std::string pass = channelInfo.size() > 1 ? channelInfo[1] : "";
+    Channel *channel = this->getChannel(name);
+	if (!channel)
     {
-        if (channel == _channels[i]->getName())
-        {
-            users.append(_channels[i]->getUsers(channel));
-        }
+		channel = new Channel(name, pass, this->_users[sockfd]);
+        this->_channels.push_back(channel);
     }
-
-    this->_users[sockfd]->Join(channel, users);
-    (void)msg;
-    (void)sockfd;
+    if (channel->getPass() != pass)
+    {
+		this->_users[sockfd]->errorPassChannel(name);
+		return;
+	}
+    this->_users[sockfd]->join(channel);
 }
 
 void Server::Part(std::string const msg, int sockfd)

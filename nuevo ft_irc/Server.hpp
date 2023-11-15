@@ -35,6 +35,7 @@ class Server
         ~Server();
 
         void start();
+        Channel *getChannel(std::string name);
         void switchStatus(std::string const msg, int sockfd);
         
         int clientConected(std::string const msg, int sockfd);
@@ -42,6 +43,7 @@ class Server
         void switchCommand(std::string const msg, int sockfd);
         
         void changeNick(std::string msg, int sockfd);
+        void changeUser(std::string msg, int sockfd);
 
         void Join(std::string msg, int sockfd);
         void Part(std::string msg, int sockfd);

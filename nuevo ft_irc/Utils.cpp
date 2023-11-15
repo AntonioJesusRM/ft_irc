@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 10:52:58 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/13 11:25:08 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/15 12:30:34 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,37 @@ std::string getPassMsg(std::string msg)
 	posEnd = subStrAux.find("\r");
 	pass = subStrAux.substr(0, posEnd);
 	return (pass);
+}
+
+static void split(const std::string& str, char delim, std::vector<std::string>& result)
+{
+    result.clear();
+
+    std::size_t start = 0;
+    std::size_t found = str.find(delim);
+
+    while (found != std::string::npos) {
+        result.push_back(str.substr(start, found - start));
+        start = found + 1;
+        found = str.find(delim, start);
+    }
+    result.push_back(str.substr(start, found));
+}
+
+std::vector<std::string> getChannelMsg(std::string msg)
+{
+	size_t		posIni;
+	size_t		posEnd;
+    std::string channel;
+	std::string	subStrAux;
+	std::vector<std::string> channelInfo;
+
+    posIni = msg.find(" ") + 1;
+	subStrAux = msg.substr(posIni);
+	posEnd = subStrAux.find("\r");
+	channel = subStrAux.substr(0, posEnd);
+	split(channel, ' ', channelInfo);
+	return (channelInfo);
 }
 
 std::string getUserMsg(std::string msg)
