@@ -67,8 +67,20 @@ void User::join(Channel *channel)
 
     this->reply(RPL_NAMREPLY(this->_nick, channel->getName(), users));
     this->reply(RPL_ENDOFNAMES(this->_nick, channel->getName()));
-    channel->broadcast(":" + this->getPrefix() + " JOIN :" + channel->getName());
+    channel->broadcast(RPL_JOIN(getPrefix(), channel->getName()));
 
     std::string message = this->_nick + " has joined to the channel " + channel->getName();
+    logMessage(message);
+}
+
+void User::leaveChannel(Channel *channel)
+{
+    std::string name = channel->getName();
+
+    for (size_t i = 0; i < this->_channels.size(); i++)
+        if (name == this->_channels[i]->getName())
+            this->_channels.erase(this->_channels.begin() + i);
+    channel->broadcast(RPL_PART(getPrefix(), channel->getName()));
+    std::string message = _nick + " has left the channel " + name;
     logMessage(message);
 }

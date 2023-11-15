@@ -52,5 +52,5 @@ class User
         void reply(const std::string& reply);
         void clientMessage(const std::string& message)const;
         void join(Channel *channel);
-        
+        void leaveChannel(Channel *channel);
 };

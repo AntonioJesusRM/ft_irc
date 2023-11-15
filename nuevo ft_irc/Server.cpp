@@ -200,8 +200,17 @@ void Server::Join(std::string const msg, int sockfd)
 
 void Server::Part(std::string const msg, int sockfd)
 {
-    (void)msg;
-    (void)sockfd;
+    std::vector<std::string> channelInfo = getChannelMsg(msg);
+    std::string name = channelInfo[0];
+
+    Channel *channel = this->getChannel(name);
+	if (!channel || (channel->userChannel(this->_users[sockfd]) == -1))
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), name));
+        return;
+    }
+    channel->removeUser(channel->userChannel(this->_users[sockfd]), this->_users[sockfd]);
+    this->_users[sockfd]->leaveChannel(channel);
 }
 
 void Server::Msg(std::string const msg, int sockfd)
