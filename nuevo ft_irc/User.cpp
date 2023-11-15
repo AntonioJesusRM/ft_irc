@@ -41,9 +41,10 @@ void User::setNick(std::string const nick){this->_nick = nick;}
 
 std::string User::getPrefix() const 
 {
+    std::string username = this->_user.empty() ? "" : "!" + this->_user;
     std::string hostname = this->_hostname.empty() ? "" : "@" + this->_hostname;
 
-    return this->_nick + hostname;
+    return this->_nick + username + hostname;
 }
 
 void User::clientMessage(const std::string& message)const
@@ -53,27 +54,21 @@ void User::clientMessage(const std::string& message)const
         std::cerr << "Error send message." << std::endl;
 }
 
+void User::reply(const std::string& reply)
+{
+    this->clientMessage(":" + this->getPrefix() + " " + reply);
+}
+
 void User::join(Channel *channel)
 {
     channel->addUser(this);
     this->_channels.push_back(channel);
-
     std::string users = channel->getUsers();
 
-    
-    this->listUserJoin(channel->getName(), users);
-    this->joinMsg(channel->getName());
+    this->reply(RPL_NAMREPLY(this->_nick, channel->getName(), users));
+    this->reply(RPL_ENDOFNAMES(this->_nick, channel->getName()));
     channel->broadcast(":" + this->getPrefix() + " JOIN :" + channel->getName());
 
     std::string message = this->_nick + " has joined to the channel " + channel->getName();
     logMessage(message);
 }
-
-void User::badPassword()const{this->clientMessage(":" + this->getPrefix() + " " + "464 " + this->_nick + " :Password Password is incorrect");}
-void User::badNickNameTry(std::string nick)const{this->clientMessage(":" + this->getPrefix() + " " + "433 " + nick + " " + nick  + " :Nickname is already in use");}
-void User::badNickName(std::string nick)const{this->clientMessage(nick  + " :Nickname is already in use");}
-void User::welcome()const{this->clientMessage(":" + this->getPrefix() + " " + "001 " + this->_nick + " :Welcome " + this->_nick + " to the ft_irc network");}
-void User::listUserJoin(std::string channel, std::string users)const{":" + this->getPrefix() + " " + "353 " + this->_nick + " = " + channel + " :" + users;}
-void User::joinMsg(std::string channel)const{":" + this->getPrefix() + " " + "366 " + this->_nick + " " + channel + " :End of /NAMES list.";}
-
-void User::errorPassChannel(std::string channel)const{":" + this->getPrefix() + " " + "475 " + this->_nick + " " + channel + " :Cannot join channel (+k)";};

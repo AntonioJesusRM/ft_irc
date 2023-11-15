@@ -120,7 +120,7 @@ int Server::clientConected(std::string const msg, int sockfd)
         User* user = this->_users[sockfd];
         std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " has disconnected because error password";
         logMessage (msgOut);
-        this->_users[sockfd]->badPassword();
+        this->_users[sockfd]->reply(ERR_PASSWDMISMATCH(this->_users[sockfd]->getNick()));
         delete user;
         this->_users.erase(sockfd);
         return 0;
@@ -133,13 +133,13 @@ void Server::clientRegistration(std::string const msg, int sockfd)
     for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
         if (nick == it->second->getNick())
         {
-            this->_users[sockfd]->badNickNameTry(nick);
+            this->_users[sockfd]->reply(ERR_NICKNAMEINUSE((nick)));
             return ;
         }
     }
     this->_users[sockfd]->setStatus("SIGNEDUP");
     this->_users[sockfd]->setNick(nick);
-    this->_users[sockfd]->welcome();
+    this->_users[sockfd]->reply(RPL_WELCOME(nick));
     std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " is now known as " + nick + ".";
     logMessage(msgOut);
 }
@@ -167,12 +167,12 @@ void Server::changeNick(std::string msg, int sockfd)
     for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
         if (nick == it->second->getNick())
         {
-            this->_users[sockfd]->badNickName(nick);
+            this->_users[sockfd]->clientMessage(nick  + " :Nickname is already in use");
             return ;
         }
     }
     this->_users[sockfd]->setNick(nick);
-    this->_users[sockfd]->welcome();
+    this->_users[sockfd]->reply(RPL_WELCOME(nick));
     std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " is now known as " + nick + ".";
     logMessage(msgOut);
 }
@@ -191,7 +191,8 @@ void Server::Join(std::string const msg, int sockfd)
     }
     if (channel->getPass() != pass)
     {
-		this->_users[sockfd]->errorPassChannel(name);
+        std::cout << "error" << std::endl;
+        this->_users[sockfd]->reply(ERR_BADCHANNELKEY(this->_users[sockfd]->getNick(), name));
 		return;
 	}
     this->_users[sockfd]->join(channel);

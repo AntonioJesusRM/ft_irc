@@ -14,6 +14,7 @@
 # include <map>
 # include "Utils.hpp"
 # include "Channel.hpp"
+# include "response.hpp"
 
 # define CHUNK_SIZE 1025
 
@@ -48,15 +49,8 @@ class User
         void setRealName(std::string const realName);
 
         std::string getPrefix()const;
+        void reply(const std::string& reply);
         void clientMessage(const std::string& message)const;
         void join(Channel *channel);
         
-        void badPassword()const;
-        void badNickNameTry(std::string nick)const;
-        void badNickName(std::string nick)const;
-        void welcome()const;
-        void listUserJoin(std::string channel, std::string users)const;
-        void joinMsg(std::string channel)const;
-
-        void errorPassChannel(std::string channel)const;
 };

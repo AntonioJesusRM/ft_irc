@@ -14,6 +14,7 @@
 # include "Utils.hpp"
 # include "Channel.hpp"
 # include "User.hpp"
+# include "response.hpp"
 
 # define MAX_CONNECTIONS 999
 # define MAX_EVENTS 1024
