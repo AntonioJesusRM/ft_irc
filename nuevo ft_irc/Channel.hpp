@@ -24,6 +24,7 @@ class Channel
 
         void    addUser(User* user);
         void    broadcast(std::string msg);
+        void    broadcast(std::string msg, User *exclude);
         int     userChannel(User *user);
         void    removeUser(int pos, User *user);
 };

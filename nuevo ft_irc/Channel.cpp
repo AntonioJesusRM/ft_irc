@@ -29,6 +29,16 @@ void    Channel::broadcast(std::string msg)
     }
 }
 
+void    Channel::broadcast(std::string msg, User* exclude)
+{
+    for(size_t i = 0; i < this->_users.size(); i++)
+    {
+        if (exclude == this->_users[i])
+            continue;
+        this->_users[i]->clientMessage(msg);
+    }
+}
+
 int Channel::userChannel(User *user)
 {
     for (size_t i = 0; i < this->_users.size(); i++)

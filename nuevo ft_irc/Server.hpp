@@ -37,6 +37,7 @@ class Server
 
         void start();
         Channel *getChannel(std::string name);
+        User *getUser(std::string name);
         void switchStatus(std::string const msg, int sockfd);
         
         int clientConected(std::string const msg, int sockfd);
