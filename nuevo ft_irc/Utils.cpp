@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 10:52:58 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/15 12:30:34 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/17 10:13:46 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static void split(const std::string& str, char delim, std::vector<std::string>& 
     result.push_back(str.substr(start, found));
 }
 
-std::vector<std::string> getChannelMsg(std::string msg)
+std::vector<std::string> getInfoMsg(std::string msg)
 {
 	size_t		posIni;
 	size_t		posEnd;

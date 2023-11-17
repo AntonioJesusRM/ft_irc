@@ -50,4 +50,5 @@ class Server
         void Join(std::string msg, int sockfd);
         void Part(std::string msg, int sockfd);
         void Msg(std::string msg, int sockfd);
+        void kick(std::string msg, int sockfd);
 };

@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/10 19:03:07 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/15 12:25:57 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/17 10:14:02 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,4 +19,4 @@ std::string 				getPassMsg(std::string msg);
 std::string 				getUserMsg(std::string msg);
 std::string 				getRealNameMsg(std::string msg);
 std::string 				getNickMsg(std::string msg);
-std::vector<std::string>	getChannelMsg(std::string msg);
+std::vector<std::string>	getInfoMsg(std::string msg);

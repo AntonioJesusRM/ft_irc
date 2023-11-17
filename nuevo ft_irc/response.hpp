@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 14:34:50 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/16 07:56:34 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/17 11:16:27 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #define ERR_NOSUCHCHANNEL(source, channel)              "403 " + source + " " + channel + " :No such channel"
 #define ERR_CANNOTSENDTOCHAN(source, channel)           "404 " + source + " " + channel + " :Cannot send to channel"
 #define ERR_NOSUCHNICK(source, nickname)                "401 " + source + " " + nickname + " :No such nick"
+#define ERR_CHANOPRIVSNEEDED(source, channel)           "482 " + source + " " + channel + " :You're not channel operator"
 
 /* Menssage Responses */
 
@@ -33,3 +34,4 @@
 #define RPL_JOIN(source, channel)                       ":" + source + " JOIN :" + channel
 #define RPL_PART(source, channel)                       ":" + source + " PART :" + channel
 #define RPL_PRIVMSG(source, target, message)            ":" + source + " PRIVMSG " + target + " :" + message
+#define RPL_KICK(source, channel, target, reason)       ":" + source + " KICK " + channel + " " + target + " " + reason

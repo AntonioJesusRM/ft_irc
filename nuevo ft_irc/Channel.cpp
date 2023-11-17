@@ -64,3 +64,19 @@ void Channel::removeUser(int pos, User *user)
             delete this;
     }
 }
+
+bool Channel::isAdmin(User *user)
+{
+    if (this->_admin == user)
+        return true;
+    return false;
+}
+
+void    Channel::kickUser(User *admin, User *dest, std::string reason)
+{
+    this->broadcast(RPL_KICK(admin->getPrefix(), _name, dest->getNick(), reason));
+    this->removeUser(this->userChannel(dest), dest);
+
+    std::string message = admin->getNick() + " kicked " + dest->getNick() + " from channel " + _name;
+    logMessage(message);
+}
