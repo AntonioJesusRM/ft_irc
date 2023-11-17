@@ -35,6 +35,26 @@ Server::~Server()
     close(this->_serverSocket);
 }
 
+static std::string read_message(int fd)
+{
+    std::string message;
+    
+    char buffer[100];
+    bzero(buffer, 100);
+
+    while (!strstr(buffer, "\n"))
+    {
+        bzero(buffer, 100);
+
+        if ((recv(fd, buffer, 100, 0) < 0) and (errno != EWOULDBLOCK))
+            throw std::runtime_error("Error while reading buffer from a client!");
+
+        message.append(buffer);
+    }
+
+    return message;
+}
+
 void Server::start()
 {
     int				kq;
@@ -58,19 +78,19 @@ void Server::start()
                 User *user = new User(this->_serverSocket, kq);
                 this->_users[user->getClientSocket()] = user;
             }else {
-                char buffer[1024];
-				memset(buffer, '\0', sizeof(buffer));
-                ssize_t bytesRead = recv(sockfd, buffer, sizeof(buffer), 0);
-                if (bytesRead <= 0) {
+                if (events[i].flags & EV_EOF)
+                {
                     User* user = this->_users[sockfd];
                     std::string msg = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " has disconnected!";
                     logMessage (msg);
                     delete user;
                     this->_users.erase(sockfd);
-                } else {
-					std::string meng = buffer;
+                }
+                else if (events[i].filter == EVFILT_READ)
+                {
+                    std::string meng = read_message(sockfd);
                     switchStatus(meng, sockfd);
-				}
+                }
 			}
         }
     }
@@ -82,6 +102,16 @@ Channel *Server::getChannel(std::string name)
     {
         if (name == this->_channels[i]->getName())
             return (this->_channels[i]);
+    }
+    return (NULL);
+}
+
+User *Server::getUser(std::string nick)
+{
+    for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it)
+    {
+        if (nick == it->second->getNick())
+            return (it->second);
     }
     return (NULL);
 }
@@ -100,10 +130,7 @@ void    Server::switchStatus(std::string const msg, int sockfd)
         return ;
     }
     if (this->_users[sockfd]->getStatus() == "SIGNEDUP")
-    {
-        std::cout << "#####ENTRADA: " << msg << std::endl;
         this->switchCommand(msg, sockfd);
-    }
 }
 
 int Server::clientConected(std::string const msg, int sockfd)
@@ -146,12 +173,12 @@ void Server::clientRegistration(std::string const msg, int sockfd)
 
 void    Server::switchCommand(std::string const msg, int sockfd)
 {
-    std::string commands[] = {"JOIN", "PART", "MSG", "NICK"};
+    std::string commands[] = {"JOIN", "PART", "PRIVMSG", "NICK", "KICK"};
 
-    void (Server::*ExecCommand[4])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick};
+    void (Server::*ExecCommand[5])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick, &Server::kick};
     
     std::string command = msg.substr(0, msg.find(" "));
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         if (command == commands[i])
         {
@@ -179,7 +206,7 @@ void Server::changeNick(std::string msg, int sockfd)
 
 void Server::Join(std::string const msg, int sockfd)
 {
-    std::vector<std::string> channelInfo = getChannelMsg(msg);
+    std::vector<std::string> channelInfo = getInfoMsg(msg);
     
     std::string name = channelInfo[0];
     std::string pass = channelInfo.size() > 1 ? channelInfo[1] : "";
@@ -200,7 +227,7 @@ void Server::Join(std::string const msg, int sockfd)
 
 void Server::Part(std::string const msg, int sockfd)
 {
-    std::vector<std::string> channelInfo = getChannelMsg(msg);
+    std::vector<std::string> channelInfo = getInfoMsg(msg);
     std::string name = channelInfo[0];
 
     Channel *channel = this->getChannel(name);
@@ -215,6 +242,80 @@ void Server::Part(std::string const msg, int sockfd)
 
 void Server::Msg(std::string const msg, int sockfd)
 {
-    (void)msg;
-    (void)sockfd;
+    std::vector<std::string> msgInfo = getInfoMsg(msg);
+    std::string dest = msgInfo[0];
+    std::string message;
+    std::vector<std::string>::iterator it = msgInfo.begin() + 1;
+    std::vector<std::string>::iterator end = msgInfo.end();
+    while (it != end)
+    {
+        message.append(*it + " ");
+        it++;
+    }
+    if (message.at(0) == ':')
+        message = message.substr(1);
+    if (dest.at(0) == '#')
+    {
+        Channel *channel = this->getChannel(dest);
+        if (!channel)
+        {
+            this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), dest));
+			return;
+        }
+        if (channel->userChannel(this->_users[sockfd]) == -1)
+        {
+            this->_users[sockfd]->reply(ERR_CANNOTSENDTOCHAN(this->_users[sockfd]->getNick(), dest));
+            return;
+        }
+        channel->broadcast(RPL_PRIVMSG(this->_users[sockfd]->getPrefix(), dest, message), this->_users[sockfd]);
+        return;
+    }
+    else
+    {
+        User *user = this->getUser(dest);
+        if (!user)
+        {
+            this->_users[sockfd]->reply(ERR_NOSUCHNICK(this->_users[sockfd]->getNick(), dest));
+		    return;
+        }
+        user->clientMessage(RPL_PRIVMSG(this->_users[sockfd]->getPrefix(), dest, message));
+    }
+}
+
+void Server::kick(std::string msg, int sockfd)
+{
+    std::vector<std::string> msgInfo = getInfoMsg(msg);
+    Channel *channel = this->getChannel(msgInfo[0]);
+    User *dest = this->getUser(msgInfo[1]);
+    std::string reason = "No reason specified!";
+
+    if (!channel)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return ;
+    }
+    if (!channel->isAdmin(this->_users[sockfd]))
+    {
+        this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return;
+    }
+    if (!dest)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHNICK(this->_users[sockfd]->getNick(), msgInfo[1]));
+        return ;
+    }
+    if (msgInfo.size() >= 3 && msgInfo[2].size() > 1)
+    {
+        reason = "";
+
+        std::vector<std::string>::iterator it = msgInfo.begin() + 2;
+        std::vector<std::string>::iterator end = msgInfo.end();
+
+        while (it != end)
+        {
+			reason.append(*it + " ");
+            it++;
+        }
+    }
+    channel->kickUser(this->_users[sockfd], dest, reason);
 }

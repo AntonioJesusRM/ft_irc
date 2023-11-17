@@ -29,6 +29,16 @@ void    Channel::broadcast(std::string msg)
     }
 }
 
+void    Channel::broadcast(std::string msg, User* exclude)
+{
+    for(size_t i = 0; i < this->_users.size(); i++)
+    {
+        if (exclude == this->_users[i])
+            continue;
+        this->_users[i]->clientMessage(msg);
+    }
+}
+
 int Channel::userChannel(User *user)
 {
     for (size_t i = 0; i < this->_users.size(); i++)
@@ -53,4 +63,20 @@ void Channel::removeUser(int pos, User *user)
         else
             delete this;
     }
+}
+
+bool Channel::isAdmin(User *user)
+{
+    if (this->_admin == user)
+        return true;
+    return false;
+}
+
+void    Channel::kickUser(User *admin, User *dest, std::string reason)
+{
+    this->broadcast(RPL_KICK(admin->getPrefix(), _name, dest->getNick(), reason));
+    this->removeUser(this->userChannel(dest), dest);
+
+    std::string message = admin->getNick() + " kicked " + dest->getNick() + " from channel " + _name;
+    logMessage(message);
 }
