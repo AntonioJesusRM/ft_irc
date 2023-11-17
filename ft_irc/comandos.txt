@@ -2,7 +2,7 @@ You must be able to authenticate, set a nickname, a username, join a channel,
 send and receive private messages using your reference client
 
 NICK - elegir nickname
-PASS - dar una contraseña para conectarse (no existe en X-Chat??)
+PASS - dar una contraseña para conectarse
 USER - elegir username
 
 JOIN - unirse a un canal
@@ -14,8 +14,7 @@ QUIT - dejar el servidor
 
 You must have operators and regular users.
 
-OPER - dar privilegios de operators a un usuario (en X-Chat no existe, existe el chanop que es un usuario
-que tiene privilegios en el CANAL, pero no en toda la red como un operator)
+OPER - dar privilegios de operators a un usuario
 
 https://modern.ircdocs.horse/ 
 "Channel Operators"
