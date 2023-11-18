@@ -32,6 +32,7 @@ int User::getClientSocket(){return (this->_clientSocket);}
 int User::getPort(){return (this->_port);}
 std::string User::getHostName(){return (this->_hostname);}
 std::string User::getStatus(){return (this->_status);}
+std::string User::getUser(){return (this->_user);}
 std::string User::getNick(){return (this->_nick);}
 
 void User::setStatus(std::string const status){this->_status = status;}

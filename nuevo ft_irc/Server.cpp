@@ -122,7 +122,6 @@ void    Server::switchStatus(std::string const msg, int sockfd)
     {
         if (this->clientConected(msg, sockfd) == 0)
             return ;
-        
     }
     if (this->_users[sockfd]->getStatus() == "CONECTED")
     {
@@ -138,6 +137,8 @@ int Server::clientConected(std::string const msg, int sockfd)
     if (!getPassMsg(msg).empty() && this->_pass == getPassMsg(msg))
     {
             this->_users[sockfd]->setStatus("CONECTED");
+			if (getUserMsg(msg).empty() || getRealNameMsg(msg).empty())
+				return 0;
             this->_users[sockfd]->setUser(getUserMsg(msg));
             this->_users[sockfd]->setRealName(getRealNameMsg(msg));
             return 1;
@@ -157,6 +158,11 @@ int Server::clientConected(std::string const msg, int sockfd)
 void Server::clientRegistration(std::string const msg, int sockfd)
 {
     std::string nick = getNickMsg(msg);
+	if (this->_users[sockfd]->getUser().empty())
+	{
+		this->_users[sockfd]->setUser(getUserMsg(msg));
+        this->_users[sockfd]->setRealName(getRealNameMsg(msg));
+	}
     for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
         if (nick == it->second->getNick())
         {
