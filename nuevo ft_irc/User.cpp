@@ -41,9 +41,10 @@ void User::setNick(std::string const nick){this->_nick = nick;}
 
 std::string User::getPrefix() const 
 {
+	std::string username = _user.empty() ? "" : "!" + _user;
     std::string hostname = this->_hostname.empty() ? "" : "@" + this->_hostname;
 
-    return this->_nick + hostname;
+    return this->_nick + username + hostname;
 }
 
 void User::clientMessage(const std::string& message)const

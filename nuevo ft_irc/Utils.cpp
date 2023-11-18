@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 10:52:58 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/17 10:13:46 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/18 11:39:50 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,8 @@ std::string getUserMsg(std::string msg)
 
 	posIni = msg.find("USER ") + 5;
 	subStrAux = msg.substr(posIni);
-	posEnd = subStrAux.find(" localhost :");
-	user = subStrAux.substr(0, posEnd/2);
+	posEnd = subStrAux.find(" ");
+	user = subStrAux.substr(0, posEnd);
 	return (user);
 }
 
