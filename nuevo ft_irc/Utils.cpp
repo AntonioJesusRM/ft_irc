@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 10:52:58 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/17 10:13:46 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/20 11:38:58 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ std::string getPassMsg(std::string msg)
 		return (pass);
 	subStrAux = msg.substr(posIni);
 	posEnd = subStrAux.find("\r");
+	if (posEnd == std::string::npos)
+		posEnd = subStrAux.find("\n");
 	pass = subStrAux.substr(0, posEnd);
 	return (pass);
 }
@@ -69,6 +71,8 @@ std::vector<std::string> getInfoMsg(std::string msg)
     posIni = msg.find(" ") + 1;
 	subStrAux = msg.substr(posIni);
 	posEnd = subStrAux.find("\r");
+	if (posEnd == std::string::npos)
+		posEnd = subStrAux.find("\n");
 	channel = subStrAux.substr(0, posEnd);
 	split(channel, ' ', channelInfo);
 	return (channelInfo);
@@ -79,21 +83,27 @@ std::string getUserMsg(std::string msg)
 	size_t		posIni;
 	size_t		posEnd;
 	std::string	subStrAux;
-	std::string	user;
+	std::string	user = "";
 
 	posIni = msg.find("USER ") + 5;
+	if (posIni == std::string::npos)
+		return (user);
 	subStrAux = msg.substr(posIni);
-	posEnd = subStrAux.find(" localhost :");
-	user = subStrAux.substr(0, posEnd/2);
+	posEnd = subStrAux.find(" ");
+	if (posEnd == std::string::npos)
+		posEnd = subStrAux.find("\n");
+	user = subStrAux.substr(0, posEnd);
 	return (user);
 }
 
 std::string getRealNameMsg(std::string msg)
 {
 	size_t		posIni;
-	std::string	realName;
+	std::string	realName = "";
 
 	posIni = msg.find(":") + 1;
+	if (posIni == std::string::npos)
+		return (realName);
 	realName = msg.substr(posIni);
 	return (realName);
 }
@@ -108,6 +118,8 @@ std::string getNickMsg(std::string msg)
 	posIni = msg.find("NICK ") + 5;
 	subStrAux = msg.substr(posIni);
 	posEnd = subStrAux.find('\r');
+	if (posEnd == std::string::npos)
+		posEnd = subStrAux.find("\n");
 	nick = subStrAux.substr(0, posEnd);
 	return (nick);
 }

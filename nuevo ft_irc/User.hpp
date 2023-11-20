@@ -41,6 +41,7 @@ class User
         int         getPort();
         std::string getHostName();
         std::string getStatus();
+		std::string getUser();
         std::string getNick();
 
         void setStatus(std::string const status);

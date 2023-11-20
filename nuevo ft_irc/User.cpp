@@ -32,6 +32,7 @@ int User::getClientSocket(){return (this->_clientSocket);}
 int User::getPort(){return (this->_port);}
 std::string User::getHostName(){return (this->_hostname);}
 std::string User::getStatus(){return (this->_status);}
+std::string User::getUser(){return (this->_user);}
 std::string User::getNick(){return (this->_nick);}
 
 void User::setStatus(std::string const status){this->_status = status;}
@@ -41,8 +42,7 @@ void User::setNick(std::string const nick){this->_nick = nick;}
 
 std::string User::getPrefix() const 
 {
-    std::cout << this->_user << std::endl;
-    std::string username = this->_user.empty() ? "" : "!" + this->_user;
+	std::string username = _user.empty() ? "" : "!" + _user;
     std::string hostname = this->_hostname.empty() ? "" : "@" + this->_hostname;
 
     return this->_nick + username + hostname;
