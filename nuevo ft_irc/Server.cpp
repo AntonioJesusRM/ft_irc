@@ -241,6 +241,8 @@ void Server::Join(std::string const msg, int sockfd)
     std::vector<std::string> channelInfo = getInfoMsg(msg);
     
     std::string name = channelInfo[0];
+    if (name.at(0) != '#')
+        return;
     std::string pass = channelInfo.size() > 1 ? channelInfo[1] : "";
     Channel *channel = this->getChannel(name);
 	if (!channel)
@@ -250,7 +252,6 @@ void Server::Join(std::string const msg, int sockfd)
     }
     if (channel->getPass() != pass)
     {
-        std::cout << "error" << std::endl;
         this->_users[sockfd]->reply(ERR_BADCHANNELKEY(this->_users[sockfd]->getNick(), name));
 		return;
 	}
