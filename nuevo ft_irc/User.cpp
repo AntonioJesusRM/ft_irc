@@ -41,9 +41,11 @@ void User::setNick(std::string const nick){this->_nick = nick;}
 
 std::string User::getPrefix() const 
 {
+    std::cout << this->_user << std::endl;
+    std::string username = this->_user.empty() ? "" : "!" + this->_user;
     std::string hostname = this->_hostname.empty() ? "" : "@" + this->_hostname;
 
-    return this->_nick + hostname;
+    return this->_nick + username + hostname;
 }
 
 void User::clientMessage(const std::string& message)const
@@ -64,9 +66,9 @@ void User::join(Channel *channel)
     this->_channels.push_back(channel);
     std::string users = channel->getUsers();
 
+    channel->broadcast(RPL_JOIN(getPrefix(), channel->getName()));
     this->reply(RPL_NAMREPLY(this->_nick, channel->getName(), users));
     this->reply(RPL_ENDOFNAMES(this->_nick, channel->getName()));
-    channel->broadcast(RPL_JOIN(getPrefix(), channel->getName()));
 
     std::string message = this->_nick + " has joined to the channel " + channel->getName();
     logMessage(message);

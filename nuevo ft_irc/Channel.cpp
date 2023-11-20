@@ -11,7 +11,7 @@ std::string Channel::getUsers()
 
     for (size_t i = 0; i < _users.size(); i++)
     {
-        users.append(this->_users[i]->getNick() + " ");
+        users.append("@" + this->_users[i]->getNick() + " ");
     }
     return (users);
 }
@@ -23,6 +23,7 @@ void    Channel::addUser(User* user)
 
 void    Channel::broadcast(std::string msg)
 {
+    std::cout << msg << std::endl;
     for(size_t i = 0; i < this->_users.size(); i++)
     {
         this->_users[i]->clientMessage(msg);
