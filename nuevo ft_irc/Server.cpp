@@ -81,7 +81,11 @@ void Server::start()
                 if (events[i].flags & EV_EOF)
                 {
                     User* user = this->_users[sockfd];
-                    std::string msg = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " has disconnected!";
+                    std::string msg;
+                    if (user->getNick().empty())
+                        msg = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " has disconnected!";
+                    else
+                        msg = user->getNick() + " has disconnected!";
                     logMessage (msg);
                     delete user;
                     this->_users.erase(sockfd);
@@ -160,9 +164,15 @@ void Server::clientRegistration(std::string const msg, int sockfd)
     std::string nick = getNickMsg(msg);
 	if (this->_users[sockfd]->getUser().empty())
 	{
-		this->_users[sockfd]->setUser(getUserMsg(msg));
-        this->_users[sockfd]->setRealName(getRealNameMsg(msg));
+        if (!getUserMsg(msg).empty())
+		    this->_users[sockfd]->setUser(getUserMsg(msg));
+        if(!getRealNameMsg(msg).empty())
+            this->_users[sockfd]->setRealName(getRealNameMsg(msg));
 	}
+    if (nick.empty())
+    {
+        return ;
+    }
     for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
         if (nick == it->second->getNick())
         {
@@ -179,12 +189,12 @@ void Server::clientRegistration(std::string const msg, int sockfd)
 
 void    Server::switchCommand(std::string const msg, int sockfd)
 {
-    std::string commands[] = {"JOIN", "PART", "PRIVMSG", "NICK", "KICK"};
+    std::string commands[] = {"JOIN", "PART", "PRIVMSG", "NICK", "USER", "KICK"};
 
-    void (Server::*ExecCommand[5])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick, &Server::kick};
+    void (Server::*ExecCommand[6])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick, &Server::changeUser, &Server::kick};
     
     std::string command = msg.substr(0, msg.find(" "));
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 6; i++)
     {
         if (command == commands[i])
         {
@@ -195,8 +205,11 @@ void    Server::switchCommand(std::string const msg, int sockfd)
 
 void Server::changeNick(std::string msg, int sockfd)
 {
-    std::string nick = msg.substr(msg.find(" ") + 1);
-    nick = nick.substr(0, nick.find('\r'));
+    std::string nick = getNickMsg(msg);
+    if (nick .empty())
+    {
+        this->_users[sockfd]->reply(ERR_NEEDMOREPARAMS(this->_users[sockfd]->getNick(), "NICK"));
+    }
     for (std::map<int, User *>::iterator it = this->_users.begin(); it != this->_users.end(); ++it) {
         if (nick == it->second->getNick())
         {
@@ -207,6 +220,19 @@ void Server::changeNick(std::string msg, int sockfd)
     this->_users[sockfd]->setNick(nick);
     this->_users[sockfd]->reply(RPL_WELCOME(nick));
     std::string msgOut = this->_users[sockfd]->getHostName() + ":" + std::to_string(this->_users[sockfd]->getPort()) + " is now known as " + nick + ".";
+    logMessage(msgOut);
+}
+
+void Server::changeUser(std::string msg, int sockfd)
+{
+    std::string user = getUserMsg(msg);
+    if (user.empty())
+    {
+        this->_users[sockfd]->reply(ERR_NEEDMOREPARAMS(this->_users[sockfd]->getNick(), "USER"));
+    }
+    this->_users[sockfd]->setUser(user);
+    this->_users[sockfd]->clientMessage(this->_users[sockfd]->getNick()  + " :change your user for " + user);
+    std::string msgOut = this->_users[sockfd]->getNick() + " change user for " + user + ".";
     logMessage(msgOut);
 }
 
