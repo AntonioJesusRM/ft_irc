@@ -51,4 +51,6 @@ class Server
         void Part(std::string msg, int sockfd);
         void Msg(std::string msg, int sockfd);
         void kick(std::string msg, int sockfd);
+        void Topic(std::string msg, int sockfd);
+        void Invite(std::string msg, int sockfd);
 };

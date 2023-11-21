@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 14:34:50 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/20 11:27:16 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/21 19:20:26 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,3 +36,5 @@
 #define RPL_PART(source, channel)                       ":" + source + " PART :" + channel
 #define RPL_PRIVMSG(source, target, message)            ":" + source + " PRIVMSG " + target + " :" + message
 #define RPL_KICK(source, channel, target, reason)       ":" + source + " KICK " + channel + " " + target + " " + reason
+#define RPL_TOPIC(source, channel, topic)				":" + source + " TOPIC " + channel + " " + topic
+#define RPL_INVITE(source, target, channel)       		":" + source + " INVITE " + target + " :" + channel

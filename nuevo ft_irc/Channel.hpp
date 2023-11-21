@@ -9,6 +9,7 @@ class Channel
     private:
         std::string         _name;
         std::string         _pass;
+        std::string         _topic;
         std::vector<User *>   _users;
         User *              _admin;
         Channel();
@@ -21,6 +22,7 @@ class Channel
         std::string getName();
         std::string getPass();
         std::string getUsers();
+        std::string getTopic();
 
         void    addUser(User* user);
         void    broadcast(std::string msg);
@@ -29,4 +31,6 @@ class Channel
         void    removeUser(int pos, User *user);
         bool    isAdmin(User *user);
         void    kickUser(User *admin, User *dest, std::string reason);
+        void    printTopic(std::string topic);
+        void    sendInvite(User *dest);
 };

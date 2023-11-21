@@ -192,12 +192,12 @@ void Server::clientRegistration(std::string const msg, int sockfd)
 
 void    Server::switchCommand(std::string const msg, int sockfd)
 {
-    std::string commands[] = {"JOIN", "PART", "PRIVMSG", "NICK", "USER", "KICK"};
+    std::string commands[] = {"JOIN", "PART", "PRIVMSG", "NICK", "USER", "KICK", "TOPIC", "INVITE"};
 
-    void (Server::*ExecCommand[6])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick, &Server::changeUser, &Server::kick};
+    void (Server::*ExecCommand[8])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick, &Server::changeUser, &Server::kick, &Server::Topic, &Server::Invite};
     
     std::string command = msg.substr(0, msg.find(" "));
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 8; i++)
     {
         if (command == commands[i])
         {
@@ -354,4 +354,60 @@ void Server::kick(std::string msg, int sockfd)
         }
     }
     channel->kickUser(this->_users[sockfd], dest, reason);
+}
+
+void Server::Topic(std::string msg, int sockfd)
+{
+    std::vector<std::string> msgInfo = getInfoMsg(msg);
+    Channel *channel = this->getChannel(msgInfo[0]);
+
+    if (!channel)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return ;
+    }
+    if (!channel->isAdmin(this->_users[sockfd]))
+    {
+        this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return;
+    }
+    std::string topic = channel->getTopic();
+    if (msgInfo.size() >= 2)
+    {
+        topic = "";
+
+        std::vector<std::string>::iterator it = msgInfo.begin() + 1;
+        std::vector<std::string>::iterator end = msgInfo.end();
+
+        while (it != end)
+        {
+			topic.append(*it + " ");
+            it++;
+        }
+    }
+    channel->printTopic(topic);
+}
+
+void Server::Invite(std::string msg, int sockfd)
+{
+    std::vector<std::string> msgInfo = getInfoMsg(msg);
+    Channel *channel = this->getChannel(msgInfo[1]);
+    User *dest = this->getUser(msgInfo[0]);
+
+    if (!channel)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return ;
+    }
+    if (!channel->isAdmin(this->_users[sockfd]))
+    {
+        this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return;
+    }
+    if (!dest)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHNICK(this->_users[sockfd]->getNick(), msgInfo[1]));
+        return ;
+    }
+    channel->sendInvite(dest);
 }

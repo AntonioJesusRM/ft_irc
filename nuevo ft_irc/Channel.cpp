@@ -1,10 +1,11 @@
 #include "Channel.hpp"
 
-Channel::Channel(std::string name, std::string pass, User* admin) : _name(name), _pass(pass), _admin(admin){}
+Channel::Channel(std::string name, std::string pass, User* admin) : _name(name), _pass(pass), _topic(""), _admin(admin){}
 Channel::~Channel(){}
 
 std::string Channel::getName(){return (this->_name);}
 std::string Channel::getPass(){return (this->_pass);}
+std::string Channel::getTopic(){return (this->_topic);}
 std::string Channel::getUsers()
 {
     std::string users = "";
@@ -79,4 +80,19 @@ void    Channel::kickUser(User *admin, User *dest, std::string reason)
 
     std::string message = admin->getNick() + " kicked " + dest->getNick() + " from channel " + _name;
     logMessage(message);
+}
+
+void    Channel::printTopic(std::string topic)
+{
+    if (topic.empty())
+        topic = "not defined";
+    else if (topic.at(0) == ':')
+        topic = topic.substr(1);
+    this->_topic = topic;
+    this->broadcast(RPL_TOPIC(this->_admin->getPrefix(), this->_name, topic));
+}
+
+void    Channel::sendInvite(User *dest)
+{
+    dest->clientMessage(RPL_INVITE(this->_admin->getPrefix(), dest->getNick(), this->_name));
 }
