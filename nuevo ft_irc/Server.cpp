@@ -142,7 +142,10 @@ int Server::clientConected(std::string const msg, int sockfd)
     {
             this->_users[sockfd]->setStatus("CONECTED");
 			if (getUserMsg(msg).empty() || getRealNameMsg(msg).empty())
+            {
+                this->_users[sockfd]->clientMessage("You are connected, now set NICK and USER.");
 				return 0;
+            }
             this->_users[sockfd]->setUser(getUserMsg(msg));
             this->_users[sockfd]->setRealName(getRealNameMsg(msg));
             return 1;
