@@ -440,9 +440,9 @@ void Server::Mode(std::string msg, int sockfd)
         this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
         return;
     }
-    std::string commands[] = {"+i", "+t", "+k", "+l"};
+    std::string commands[] = {"i", "t", "k", "l"};
     void (Channel::*ExecCommand[4])(std::vector<std::string> msgInfo, User *user) = {&Channel::ChangeI, &Channel::ChangeT, &Channel::ChangeK, &Channel::ChangeL};
-    std::string command = msgInfo[1];
+    std::string command = msgInfo[1].substr(1);
     for (int i = 0; i < 4; i++)
     {
         if (command == commands[i])
@@ -450,7 +450,7 @@ void Server::Mode(std::string msg, int sockfd)
             (channel->*ExecCommand[i])(msgInfo, this->_users[sockfd]);
         }
     }
-    if (command == "+o")
+    if (command == "o")
     {
         if (msgInfo.size() < 3)
         {

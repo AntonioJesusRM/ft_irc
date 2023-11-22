@@ -3,10 +3,10 @@
 Channel::Channel(std::string name, std::string pass, User* admin) : _name(name), _pass(pass), _topic("")
 {
     this->_admin.push_back(admin);
-    this->_i = 0;
-    this->_t = 0;
-    this->_k = 0;
-    this->_l = 0;
+    this->_i = false;
+    this->_t = false;
+    this->_k = false;
+    this->_l = false;
 }
 
 Channel::~Channel(){}
@@ -14,8 +14,8 @@ Channel::~Channel(){}
 std::string Channel::getName(){return (this->_name);}
 std::string Channel::getPass(){return (this->_pass);}
 std::string Channel::getTopic(){return (this->_topic);}
-int Channel::getI(){return (this->_i);}
-int Channel::getT(){return (this->_t);}
+bool Channel::getI(){return (this->_i);}
+bool Channel::getT(){return (this->_t);}
 std::string Channel::getUsers()
 {
     std::string users = "";
@@ -113,31 +113,52 @@ void    Channel::sendInvite(User *dest, User *user)
 
 void Channel::ChangeI(std::vector<std::string> msgInfo, User *user)
 {
-    this->_i++;
-    bool active = true;
-    if (this->_i % 2 == 0)
-        active = false;
-    this->broadcast(RPL_MODE(user->getPrefix(), msgInfo[0], (active ? "+i" : "-i"), ""));
+    bool active = false;
+	if (msgInfo[1].at(0) == '+')
+		active = true;
+	if (active != this->getI())
+	{
+    	this->broadcast(RPL_MODE(user->getPrefix(), msgInfo[0], (active ? "+i" : "-i"), ""));
+		this->_i = active;
+	}
 }
 
 void Channel::ChangeT(std::vector<std::string> msgInfo, User *user)
 {
-    this->_t++;
-    bool active = true;
-    if (this->_t % 2 == 0)
-        active = false;
-    this->broadcast(RPL_MODE(user->getPrefix(), msgInfo[0], (active ? "+t" : "-t"), ""));
+	bool active = false;
+	if (msgInfo[1].at(0) == '+')
+		active = true;
+	if (active != this->getT())
+	{
+    	this->broadcast(RPL_MODE(user->getPrefix(), msgInfo[0], (active ? "+t" : "-t"), ""));
+		this->_t = active;
+	}
 }
 
 void Channel::ChangeO(std::vector<std::string> msgInfo, User *user, User *dest)
 {
-    this->_admin.push_back(dest);
-    this->broadcast(RPL_MODE_O(user->getPrefix(), msgInfo[0], dest->getNick()));
+	if (msgInfo[1].at(0) == '+')
+	{
+		this->_admin.push_back(dest);
+		this->broadcast(RPL_MODE_O(user->getPrefix(), msgInfo[0], dest->getNick()));
+	}
+	else
+	{
+		if (!this->isAdmin(dest))
+		{
+			dest->reply(ERR_CHANOPRIVSNEEDED(dest->getNick(), msgInfo[0]));
+			return ;
+		}
+		for (size_t i = 0; i < this->_admin.size(); i++)
+		{
+			if (dest->getNick() == this->_admin[i]->getNick())
+				this->_users.erase(this->_users.begin() + i);
+		}
+	}
 }
 
 void Channel::ChangeK(std::vector<std::string> msgInfo, User *user)
 {
-    this->_k++;
     std::cout << this->_k << std::endl;
     (void)user;
     (void)msgInfo;
@@ -145,7 +166,6 @@ void Channel::ChangeK(std::vector<std::string> msgInfo, User *user)
 
 void Channel::ChangeL(std::vector<std::string> msgInfo, User *user)
 {
-    this->_l++;
     std::cout << this->_l << std::endl;
     (void)user;
     (void)msgInfo;

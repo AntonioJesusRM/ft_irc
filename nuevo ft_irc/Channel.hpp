@@ -12,10 +12,10 @@ class Channel
         std::string             _topic;
         std::vector<User *>     _users;
         std::vector<User *>     _admin;
-        int                     _i;
-        int                     _t;
-        int                     _k;
-        int                     _l;
+        bool                    _i;
+        bool                    _t;
+        bool                    _k;
+        bool                    _l;
         Channel();
         Channel(Channel const &src);
         Channel &operator=(Channel const &src);
@@ -27,8 +27,10 @@ class Channel
         std::string getPass();
         std::string getUsers();
         std::string getTopic();
-        int getI();
-        int getT();
+        bool getI();
+        bool getT();
+		bool getK();
+        bool getL();
 
         void    addUser(User* user);
         void    broadcast(std::string msg);
