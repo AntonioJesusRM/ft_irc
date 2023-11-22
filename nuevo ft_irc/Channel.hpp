@@ -15,7 +15,7 @@ class Channel
         bool                    _i;
         bool                    _t;
         bool                    _k;
-        bool                    _l;
+        int                     _l;
         Channel();
         Channel(Channel const &src);
         Channel &operator=(Channel const &src);
@@ -27,10 +27,11 @@ class Channel
         std::string getPass();
         std::string getUsers();
         std::string getTopic();
-        bool getI();
-        bool getT();
-		bool getK();
-        bool getL();
+        int     getSizeUsers();
+        bool    getI();
+        bool    getT();
+		bool    getK();
+        int     getL();
 
         void    addUser(User* user);
         void    broadcast(std::string msg);

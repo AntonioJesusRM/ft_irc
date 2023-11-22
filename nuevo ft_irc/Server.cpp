@@ -253,6 +253,11 @@ void Server::Join(std::string const msg, int sockfd)
 		channel = new Channel(name, pass, this->_users[sockfd]);
         this->_channels.push_back(channel);
     }
+    if (channel->getL() != 0 && channel->getL() <= channel->getSizeUsers())
+    {
+        this->_users[sockfd]->reply(ERR_CHANNELISFULL(this->_users[sockfd]->getNick(), name));
+        return;
+    }
     if (!this->_users[sockfd]->isInvite(channel->getName()))
     {
         if (channel->getPass() != pass)
@@ -260,7 +265,7 @@ void Server::Join(std::string const msg, int sockfd)
             this->_users[sockfd]->reply(ERR_BADCHANNELKEY(this->_users[sockfd]->getNick(), name));
             return;
         }
-        if (channel->getI() % 2 != 0)
+        if (channel->getI())
         {
             this->_users[sockfd]->reply(ERR_BADCHANNELINVITE(this->_users[sockfd]->getNick(), name));
             return;

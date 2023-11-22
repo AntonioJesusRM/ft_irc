@@ -24,6 +24,7 @@
 #define ERR_NOSUCHNICK(source, nickname)                "401 " + source + " " + nickname + " :No such nick"
 #define ERR_NEEDMOREPARAMS(source, command)             "461 " + source + " " + command + " :Not enough parameters"
 #define ERR_CHANOPRIVSNEEDED(source, channel)           "482 " + source + " " + channel + " :You're not channel operator"
+#define ERR_CHANNELISFULL(source, channel)              "471 " + source + " " + channel + " :Cannot join channel (+l)"
 
 /* Menssage Responses */
 
@@ -40,4 +41,9 @@
 #define RPL_TOPIC(source, channel, topic)				":" + source + " TOPIC " + channel + " " + topic
 #define RPL_INVITE(source, target, channel)       		":" + source + " INVITE " + target + " :" + channel
 #define RPL_MODE(source, channel, modes, args)          ":" + source + " MODE " + channel + " " + modes + " " + args
-#define RPL_MODE_O(source, channel, target)			    ":" + source + " 328 " + channel + " " + target + " :is now a channel operator"
+#define RPL_MODE_O(source, channel, target)			    ":" + source + " MODE " + channel + " +o " + target
+#define RPL_MODE_MINUS_O(source, channel, target)	    ":" + source + " MODE " + channel + " -o " + target
+#define RPL_MODE_K(source, channel, pass)			    ":" + source + " MODE " + channel + " +k " + pass
+#define RPL_MODE_MINUS_K(source, channel)			    ":" + source + " MODE " + channel + " -k"
+#define RPL_MODE_L(source, channel, limit)			    ":" + source + " MODE " + channel + " +l " + limit
+#define RPL_MODE_MINUS_L(source, channel)			    ":" + source + " MODE " + channel + " -l"

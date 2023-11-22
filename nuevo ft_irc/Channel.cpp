@@ -6,7 +6,7 @@ Channel::Channel(std::string name, std::string pass, User* admin) : _name(name),
     this->_i = false;
     this->_t = false;
     this->_k = false;
-    this->_l = false;
+    this->_l = 0;
 }
 
 Channel::~Channel(){}
@@ -14,8 +14,10 @@ Channel::~Channel(){}
 std::string Channel::getName(){return (this->_name);}
 std::string Channel::getPass(){return (this->_pass);}
 std::string Channel::getTopic(){return (this->_topic);}
+int Channel::getSizeUsers(){return (this->_users.size());}
 bool Channel::getI(){return (this->_i);}
 bool Channel::getT(){return (this->_t);}
+int Channel::getL(){return (this->_l);}
 std::string Channel::getUsers()
 {
     std::string users = "";
@@ -34,7 +36,6 @@ void    Channel::addUser(User* user)
 
 void    Channel::broadcast(std::string msg)
 {
-    std::cout << msg << std::endl;
     for(size_t i = 0; i < this->_users.size(); i++)
     {
         this->_users[i]->clientMessage(msg);
@@ -153,21 +154,52 @@ void Channel::ChangeO(std::vector<std::string> msgInfo, User *user, User *dest)
 		for (size_t i = 0; i < this->_admin.size(); i++)
 		{
 			if (dest->getNick() == this->_admin[i]->getNick())
-				this->_users.erase(this->_users.begin() + i);
+            {
+				this->_admin.erase(this->_admin.begin() + i);
+                this->broadcast(RPL_MODE_MINUS_O(user->getPrefix(), msgInfo[0], dest->getNick()));
+            }
 		}
 	}
 }
 
 void Channel::ChangeK(std::vector<std::string> msgInfo, User *user)
 {
-    std::cout << this->_k << std::endl;
-    (void)user;
-    (void)msgInfo;
+    if (msgInfo[1].at(0) == '+')
+	{
+        this->broadcast(RPL_MODE_K(user->getPrefix(), msgInfo[0], msgInfo[2]));
+        this->_pass = msgInfo[2];
+    }
+	else
+	{
+		this->broadcast(RPL_MODE_MINUS_K(user->getPrefix(), msgInfo[0]));
+        this->_pass = "";
+	}
 }
 
 void Channel::ChangeL(std::vector<std::string> msgInfo, User *user)
 {
-    std::cout << this->_l << std::endl;
-    (void)user;
-    (void)msgInfo;
+    int number;
+    const char *pass = msgInfo[2].c_str();
+    if (msgInfo[1].at(0) == '+')
+	{
+        for (const char* ptr = pass; *ptr != '\0'; ++ptr) {
+            if (!isdigit(*ptr)) {
+                user->reply(ERR_NEEDMOREPARAMS(user->getNick(), "MODE"));
+                return;
+            }
+        }
+	    number = std::atoi(pass);
+        if (number <= 0)
+        {
+            user->reply(ERR_NEEDMOREPARAMS(user->getNick(), "MODE"));
+            return;
+        }
+        this->broadcast(RPL_MODE_L(user->getPrefix(), msgInfo[0], msgInfo[2]));
+        this->_l = number;
+    }
+	else
+	{
+		this->broadcast(RPL_MODE_MINUS_L(user->getPrefix(), msgInfo[0]));
+        this->_l = 0;
+	}
 }
