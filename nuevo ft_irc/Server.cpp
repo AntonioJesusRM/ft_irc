@@ -192,12 +192,12 @@ void Server::clientRegistration(std::string const msg, int sockfd)
 
 void    Server::switchCommand(std::string const msg, int sockfd)
 {
-    std::string commands[] = {"JOIN", "PART", "PRIVMSG", "NICK", "USER", "KICK"};
+    std::string commands[] = {"JOIN", "PART", "PRIVMSG", "NICK", "USER", "KICK", "TOPIC", "INVITE", "MODE"};
 
-    void (Server::*ExecCommand[6])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick, &Server::changeUser, &Server::kick};
+    void (Server::*ExecCommand[9])(std::string msg, int sockfd) = {&Server::Join, &Server::Part, &Server::Msg, &Server::changeNick, &Server::changeUser, &Server::kick, &Server::Topic, &Server::Invite, &Server::Mode};
     
     std::string command = msg.substr(0, msg.find(" "));
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 9; i++)
     {
         if (command == commands[i])
         {
@@ -253,11 +253,19 @@ void Server::Join(std::string const msg, int sockfd)
 		channel = new Channel(name, pass, this->_users[sockfd]);
         this->_channels.push_back(channel);
     }
-    if (channel->getPass() != pass)
+    if (!this->_users[sockfd]->isInvite(channel->getName()))
     {
-        this->_users[sockfd]->reply(ERR_BADCHANNELKEY(this->_users[sockfd]->getNick(), name));
-		return;
-	}
+        if (channel->getPass() != pass)
+        {
+            this->_users[sockfd]->reply(ERR_BADCHANNELKEY(this->_users[sockfd]->getNick(), name));
+            return;
+        }
+        if (channel->getI() % 2 != 0)
+        {
+            this->_users[sockfd]->reply(ERR_BADCHANNELINVITE(this->_users[sockfd]->getNick(), name));
+            return;
+        }
+    }
     this->_users[sockfd]->join(channel);
 }
 
@@ -354,4 +362,107 @@ void Server::kick(std::string msg, int sockfd)
         }
     }
     channel->kickUser(this->_users[sockfd], dest, reason);
+}
+
+void Server::Topic(std::string msg, int sockfd)
+{
+    std::vector<std::string> msgInfo = getInfoMsg(msg);
+    Channel *channel = this->getChannel(msgInfo[0]);
+
+    if (!channel)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return ;
+    }
+    if (channel->getT() % 2 == 0 && !channel->isAdmin(this->_users[sockfd]))
+    {
+        this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return;
+    }
+    std::string topic = channel->getTopic();
+    if (msgInfo.size() >= 2)
+    {
+        topic = "";
+
+        std::vector<std::string>::iterator it = msgInfo.begin() + 1;
+        std::vector<std::string>::iterator end = msgInfo.end();
+
+        while (it != end)
+        {
+			topic.append(*it + " ");
+            it++;
+        }
+    }
+    channel->printTopic(topic, this->_users[sockfd]);
+}
+
+void Server::Invite(std::string msg, int sockfd)
+{
+    std::vector<std::string> msgInfo = getInfoMsg(msg);
+    Channel *channel = this->getChannel(msgInfo[1]);
+    User *dest = this->getUser(msgInfo[0]);
+
+    if (!channel)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return ;
+    }
+    if (!channel->isAdmin(this->_users[sockfd]))
+    {
+        this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return;
+    }
+    if (!dest)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHNICK(this->_users[sockfd]->getNick(), msgInfo[1]));
+        return ;
+    }
+    channel->sendInvite(dest, this->_users[sockfd]);
+}
+
+void Server::Mode(std::string msg, int sockfd)
+{
+    std::vector<std::string> msgInfo = getInfoMsg(msg);
+
+    if (msgInfo.size() < 2)
+    {
+        this->_users[sockfd]->reply(ERR_NEEDMOREPARAMS(this->_users[sockfd]->getNick(), "MODE"));
+        return;
+    }
+    Channel *channel = this->getChannel(msgInfo[0]);
+    if (!channel)
+    {
+        this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return ;
+    }
+    if (!channel->isAdmin(this->_users[sockfd]))
+    {
+        this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
+        return;
+    }
+    std::string commands[] = {"i", "t", "k", "l"};
+    void (Channel::*ExecCommand[4])(std::vector<std::string> msgInfo, User *user) = {&Channel::ChangeI, &Channel::ChangeT, &Channel::ChangeK, &Channel::ChangeL};
+    std::string command = msgInfo[1].substr(1);
+    for (int i = 0; i < 4; i++)
+    {
+        if (command == commands[i])
+        {
+            (channel->*ExecCommand[i])(msgInfo, this->_users[sockfd]);
+        }
+    }
+    if (command == "o")
+    {
+        if (msgInfo.size() < 3)
+        {
+            this->_users[sockfd]->reply(ERR_NEEDMOREPARAMS(this->_users[sockfd]->getNick(), "MODE"));
+            return;
+        }
+        User *dest = this->getUser(msgInfo[2]);
+        if (!dest)
+        {
+            this->_users[sockfd]->reply(ERR_NOSUCHNICK(this->_users[sockfd]->getNick(), msgInfo[1]));
+            return ;
+        }
+        channel->ChangeO(msgInfo, this->_users[sockfd], dest);
+    }
 }

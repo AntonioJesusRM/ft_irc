@@ -21,6 +21,7 @@ User::User(int serverSocket, int kq)
     this->_nick = "";
     this->_user = "";
     this->_realName = "";
+    this->_channelInvite = "";
 }
 
 User::~User()
@@ -37,6 +38,7 @@ std::string User::getNick(){return (this->_nick);}
 
 void User::setStatus(std::string const status){this->_status = status;}
 void User::setUser(std::string const user){this->_user = user;}
+void User::setChannelInvite(std::string const name){this->_channelInvite = name;}
 void User::setRealName(std::string const realName){this->_realName = realName;}
 void User::setNick(std::string const nick){this->_nick = nick;}
 
@@ -46,6 +48,13 @@ std::string User::getPrefix() const
     std::string hostname = this->_hostname.empty() ? "" : "@" + this->_hostname;
 
     return this->_nick + username + hostname;
+}
+
+bool User::isInvite(std::string const channel)
+{
+    if (channel == this->_channelInvite)
+        return true;
+    return false;
 }
 
 void User::clientMessage(const std::string& message)const

@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 14:34:50 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/20 11:27:16 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/22 12:55:30 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 #define ERR_PASSWDMISMATCH(source)                      "464 " + source + " :Password is incorrect"
 #define ERR_NICKNAMEINUSE(source)                       "433 " + source + " " + source  + " :Nickname is already in use"
+#define ERR_BADCHANNELINVITE(source, channel)           "473 " + source + " " + channel + " :Cannot join channel (+i)"
 #define ERR_BADCHANNELKEY(source, channel)              "475 " + source + " " + channel + " :Cannot join channel (+k)"
 #define ERR_NOSUCHCHANNEL(source, channel)              "403 " + source + " " + channel + " :No such channel"
 #define ERR_CANNOTSENDTOCHAN(source, channel)           "404 " + source + " " + channel + " :Cannot send to channel"
@@ -36,3 +37,7 @@
 #define RPL_PART(source, channel)                       ":" + source + " PART :" + channel
 #define RPL_PRIVMSG(source, target, message)            ":" + source + " PRIVMSG " + target + " :" + message
 #define RPL_KICK(source, channel, target, reason)       ":" + source + " KICK " + channel + " " + target + " " + reason
+#define RPL_TOPIC(source, channel, topic)				":" + source + " TOPIC " + channel + " " + topic
+#define RPL_INVITE(source, target, channel)       		":" + source + " INVITE " + target + " :" + channel
+#define RPL_MODE(source, channel, modes, args)          ":" + source + " MODE " + channel + " " + modes + " " + args
+#define RPL_MODE_O(source, channel, target)			    ":" + source + " 328 " + channel + " " + target + " :is now a channel operator"
