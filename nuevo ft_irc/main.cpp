@@ -35,10 +35,10 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	pass = argv[2];
-    try
+	try
     {
 		Server server(port, pass);
-        server.start();
+		server.start();
         return 0;
     }
     catch (const std::exception& e)
