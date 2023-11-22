@@ -6,7 +6,7 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/15 14:34:50 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/22 11:32:35 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/22 12:55:30 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,3 +40,4 @@
 #define RPL_TOPIC(source, channel, topic)				":" + source + " TOPIC " + channel + " " + topic
 #define RPL_INVITE(source, target, channel)       		":" + source + " INVITE " + target + " :" + channel
 #define RPL_MODE(source, channel, modes, args)          ":" + source + " MODE " + channel + " " + modes + " " + args
+#define RPL_MODE_O(source, channel, target)			    ":" + source + " 328 " + channel + " " + target + " :is now a channel operator"

@@ -14,7 +14,6 @@ class Channel
         std::vector<User *>     _admin;
         int                     _i;
         int                     _t;
-        int                     _o;
         int                     _k;
         int                     _l;
         Channel();
@@ -29,6 +28,7 @@ class Channel
         std::string getUsers();
         std::string getTopic();
         int getI();
+        int getT();
 
         void    addUser(User* user);
         void    broadcast(std::string msg);
@@ -42,7 +42,7 @@ class Channel
 
         void ChangeI(std::vector<std::string> msgInfo, User *user);
         void ChangeT(std::vector<std::string> msgInfo, User *user);
-        void ChangeO(std::vector<std::string> msgInfo, User *user);
+        void ChangeO(std::vector<std::string> msgInfo, User *user, User *dest);
         void ChangeK(std::vector<std::string> msgInfo, User *user);
         void ChangeL(std::vector<std::string> msgInfo, User *user);
 };

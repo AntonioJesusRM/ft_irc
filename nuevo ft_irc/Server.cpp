@@ -374,7 +374,7 @@ void Server::Topic(std::string msg, int sockfd)
         this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), msgInfo[0]));
         return ;
     }
-    if (!channel->isAdmin(this->_users[sockfd]))
+    if (channel->getT() % 2 == 0 && !channel->isAdmin(this->_users[sockfd]))
     {
         this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
         return;
@@ -440,14 +440,29 @@ void Server::Mode(std::string msg, int sockfd)
         this->_users[sockfd]->reply(ERR_CHANOPRIVSNEEDED(this->_users[sockfd]->getNick(), msgInfo[0]));
         return;
     }
-    std::string commands[] = {"+i", "+t", "+k", "+o", "+l"};
-    void (Channel::*ExecCommand[5])(std::vector<std::string> msgInfo, User *user) = {&Channel::ChangeI, &Channel::ChangeT, &Channel::ChangeK, &Channel::ChangeO, &Channel::ChangeL};
+    std::string commands[] = {"+i", "+t", "+k", "+l"};
+    void (Channel::*ExecCommand[4])(std::vector<std::string> msgInfo, User *user) = {&Channel::ChangeI, &Channel::ChangeT, &Channel::ChangeK, &Channel::ChangeL};
     std::string command = msgInfo[1];
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 4; i++)
     {
         if (command == commands[i])
         {
             (channel->*ExecCommand[i])(msgInfo, this->_users[sockfd]);
         }
+    }
+    if (command == "+o")
+    {
+        if (msgInfo.size() < 3)
+        {
+            this->_users[sockfd]->reply(ERR_NEEDMOREPARAMS(this->_users[sockfd]->getNick(), "MODE"));
+            return;
+        }
+        User *dest = this->getUser(msgInfo[2]);
+        if (!dest)
+        {
+            this->_users[sockfd]->reply(ERR_NOSUCHNICK(this->_users[sockfd]->getNick(), msgInfo[1]));
+            return ;
+        }
+        channel->ChangeO(msgInfo, this->_users[sockfd], dest);
     }
 }
