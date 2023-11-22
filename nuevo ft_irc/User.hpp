@@ -28,6 +28,7 @@ class User
         std::string _realName;
         std::string _hostname;
         std::string _status;
+        std::string _channelInvite;
         int         _port;
         int         _clientSocket;
         User();
@@ -46,10 +47,12 @@ class User
 
         void setStatus(std::string const status);
         void setUser(std::string const user);
+        void setChannelInvite(std::string const name);
         void setNick(std::string const nick);
         void setRealName(std::string const realName);
 
         std::string getPrefix()const;
+        bool isInvite(std::string const channel);
         void reply(const std::string& reply);
         void clientMessage(const std::string& message)const;
         void join(Channel *channel);
