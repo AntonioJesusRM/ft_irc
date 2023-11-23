@@ -6,11 +6,11 @@
 /*   By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 09:22:45 by aruiz-mo          #+#    #+#             */
-/*   Updated: 2023/11/21 11:10:21 by aruiz-mo         ###   ########.fr       */
+/*   Updated: 2023/11/23 13:58:18 by aruiz-mo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 
 int main(int argc, char **argv)
 {

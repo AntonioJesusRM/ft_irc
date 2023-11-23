@@ -6,7 +6,7 @@
 #    By: aruiz-mo <aruiz-mo@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/19 09:17:04 by aruiz-mo          #+#    #+#              #
-#    Updated: 2023/11/11 11:26:04 by aruiz-mo         ###   ########.fr        #
+#    Updated: 2023/11/23 13:56:37 by aruiz-mo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ RM = rm -rf
 
 COLOR = \033[1;32m
 
-SRC = main.cpp Server.cpp User.cpp Utils.cpp Channel.cpp
+SRC = src/main.cpp src/Server.cpp src/User.cpp src/Utils.cpp src/Channel.cpp
 
 OBJ = $(SRC:%.cpp=%.o)
 
