@@ -4,6 +4,7 @@ Server::Server(int port, std::string pass)
 {
     this->_port = port;
     this->_pass = pass;
+    this->_flag = 1;
     struct sockaddr_in	serverAddr;
 	
 	this->_serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -69,7 +70,7 @@ void Server::start()
     EV_SET(&event, this->_serverSocket, EVFILT_READ, EV_ADD, 0, 0, NULL);
     kevent(kq, &event, 1, NULL, 0, NULL);
     logMessage("Server is listening...");
-	while (true)
+	while (this->_flag)
 	{
         int numEvents = kevent(kq, NULL, 0, events, MAX_EVENTS, NULL);
 		for (int i = 0; i < numEvents; ++i) {
@@ -89,6 +90,7 @@ void Server::start()
                     logMessage (msg);
                     delete user;
                     this->_users.erase(sockfd);
+                    this->_flag = this->_users.size();
                 }
                 else if (events[i].filter == EVFILT_READ)
                 {
@@ -285,7 +287,7 @@ void Server::Part(std::string const msg, int sockfd)
         this->_users[sockfd]->reply(ERR_NOSUCHCHANNEL(this->_users[sockfd]->getNick(), name));
         return;
     }
-    channel->removeUser(channel->userChannel(this->_users[sockfd]), this->_users[sockfd]);
+    channel->removeUser(this->_users[sockfd]);
     this->_users[sockfd]->leaveChannel(channel);
 }
 

@@ -37,7 +37,7 @@ class Channel
         void    broadcast(std::string msg);
         void    broadcast(std::string msg, User *exclude);
         int     userChannel(User *user);
-        void    removeUser(int pos, User *user);
+        void    removeUser(User *user);
         bool    isAdmin(User *user);
         void    kickUser(User *admin, User *dest, std::string reason);
         void    printTopic(std::string topic, User *user);

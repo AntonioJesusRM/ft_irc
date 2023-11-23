@@ -24,6 +24,7 @@ class Server
     private:
         int                     _serverSocket;
         int                     _port;
+        int                     _flag;
         std::string             _pass;
         std::vector<Channel *>   _channels;
         std::map<int, User *>   _users;

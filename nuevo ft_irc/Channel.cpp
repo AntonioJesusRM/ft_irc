@@ -62,9 +62,9 @@ int Channel::userChannel(User *user)
     return (-1);
 }
 
-void Channel::removeUser(int pos, User *user)
+void Channel::removeUser(User *user)
 {
-    this->_users.erase(this->_users.begin() + pos);
+    this->_users.erase(this->_users.begin() + this->userChannel(user));
     if (this->isAdmin(user) && this->_admin.size() == 0)
     {
         if (this->_users.size() > 0)
@@ -91,7 +91,7 @@ bool Channel::isAdmin(User *user)
 void    Channel::kickUser(User *admin, User *dest, std::string reason)
 {
     this->broadcast(RPL_KICK(admin->getPrefix(), _name, dest->getNick(), reason));
-    this->removeUser(this->userChannel(dest), dest);
+    this->removeUser(dest);
 
     std::string message = admin->getNick() + " kicked " + dest->getNick() + " from channel " + _name;
     logMessage(message);

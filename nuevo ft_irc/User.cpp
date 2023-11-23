@@ -26,6 +26,9 @@ User::User(int serverSocket, int kq)
 
 User::~User()
 {
+    for(size_t i = 0; i < this->_channels.size(); i++)
+        this->_channels[i]->removeUser(this);
+    this->_channels.clear();
     close(this->_clientSocket);
 }
 
