@@ -179,9 +179,9 @@ void Channel::ChangeK(std::vector<std::string> msgInfo, User *user)
 void Channel::ChangeL(std::vector<std::string> msgInfo, User *user)
 {
     int number;
-    const char *pass = msgInfo[2].c_str();
     if (msgInfo[1].at(0) == '+')
 	{
+        const char *pass = msgInfo[2].c_str();
         for (const char* ptr = pass; *ptr != '\0'; ++ptr) {
             if (!isdigit(*ptr)) {
                 user->reply(ERR_NEEDMOREPARAMS(user->getNick(), "MODE"));

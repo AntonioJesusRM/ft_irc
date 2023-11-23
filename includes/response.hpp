@@ -15,7 +15,7 @@
 
 /* Error Responses */
 
-#define ERR_PASSWDMISMATCH(source)                      "464 " + source + " :Password is incorrect"
+#define ERR_PASSWDMISMATCH(source)                      "464 " + source + " : Password incorrect"
 #define ERR_NICKNAMEINUSE(source)                       "433 " + source + " " + source  + " :Nickname is already in use"
 #define ERR_BADCHANNELINVITE(source, channel)           "473 " + source + " " + channel + " :Cannot join channel (+i)"
 #define ERR_BADCHANNELKEY(source, channel)              "475 " + source + " " + channel + " :Cannot join channel (+k)"
